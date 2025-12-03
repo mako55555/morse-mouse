@@ -8,7 +8,7 @@ morse = ""
 clicked_time = 0
 unclick_time = 0
 t = time.time()
-dit_time = 0.15
+dit_time = 0.08
 
 watch_for_space = False
 failed_morse = False
@@ -60,7 +60,7 @@ MORSE_CODE_DICT = {
     "--..": "z",
     "-----": "0",
     ".----": "1",
-    "..--": "2",
+    "..---": "2",
     "...--": "3",
     "....-": "4",
     ".....": "5",
@@ -72,7 +72,6 @@ MORSE_CODE_DICT = {
     "--..--": ",",
     "..--..": "?",
     "-..-.": "/",
-    "--..": " ",  # space
 }
 
 INVERTED_MORSE_CODE_DICT = {value: key for key, value in MORSE_CODE_DICT.items()}
@@ -83,7 +82,7 @@ def type_letter(morse, fail=False):
         return True
 
     if morse:
-        m = MORSE_CODE_DICT[morse]
+        m = MORSE_CODE_DICT[morse] if morse in MORSE_CODE_DICT else morse
         kbd_controller.press(m)
         kbd_controller.release(m)
 
@@ -154,7 +153,7 @@ while True:
         restart_mouse_listener = False
 
     if clicked_time < unclick_time:
-        if (time.time() - unclick_time) > 0.3 and morse != "":  # letter timeout
+        if (time.time() - unclick_time) > 0.15 and morse != "":  # letter timeout
 
             if failed_morse and enabled:
                 backspace(len(fail_keyword))
@@ -172,10 +171,10 @@ while True:
 
         if (
             watch_for_space
-            and time.time() - unclick_time > 1.5  # word timeout
+            and time.time() - unclick_time > 0.8  # word timeout
             and not failed_morse
         ):
-            type_letter("--..")
+            type_letter(" ")
             watch_for_space = False
 
         if morse.count(".") >= 7:
