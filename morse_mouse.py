@@ -8,7 +8,10 @@ morse = ""
 clicked_time = 0
 unclick_time = 0
 t = time.time()
+
 dit_time = 0.08
+letter_timeout = 0.15
+word_timeout = 0.6
 
 watch_for_space = False
 failed_morse = False
@@ -108,13 +111,18 @@ def on_click(x, y, button, pressed):
     global clicked_time, morse, unclick_time, t, enabled
     t = time.time()
 
-    if enabled and button == button.left:
-        if pressed:
+    if enabled:
+        if button == button.left:
+            if pressed:
+                clicked_time = t
+            else:
+                unclick_time = t
+                diff = unclick_time - clicked_time
+                morse += "-" if diff >= dit_time else "."
+
+        if button == button.right and pressed:
+            backspace(1)
             clicked_time = t
-        else:
-            unclick_time = t
-            diff = unclick_time - clicked_time
-            morse += "-" if diff >= dit_time else "."
 
 
 def on_press(key):
@@ -126,12 +134,13 @@ def on_press(key):
         pass
 
 
-def on_release(key):
+def on_release(key, button):
     global toggle_key, toggle_pressed, backspace, toggle
     try:
         if toggle_pressed and key.char == toggle_key and toggle_pressed:
             toggle_pressed = False
             backspace(1)
+            print("backspaced")
             toggle()
     except AttributeError:
         pass
@@ -153,7 +162,7 @@ while True:
         restart_mouse_listener = False
 
     if clicked_time < unclick_time:
-        if (time.time() - unclick_time) > 0.15 and morse != "":  # letter timeout
+        if (time.time() - unclick_time) > letter_timeout and morse != "":
 
             if failed_morse and enabled:
                 backspace(len(fail_keyword))
@@ -171,7 +180,7 @@ while True:
 
         if (
             watch_for_space
-            and time.time() - unclick_time > 0.8  # word timeout
+            and time.time() - unclick_time > word_timeout
             and not failed_morse
         ):
             type_letter(" ")
