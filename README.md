@@ -6,7 +6,7 @@ Turn any computer into a one-key Morse keyboard with this universal Python scrip
 Clone the repository:
 
 ```bash
-git clone https://github.com/yourusername/morse-mouse.git
+git clone https://github.com/mako55555/morse-mouse.git
 cd morse-mouse
 ```
 
